@@ -249,7 +249,7 @@ json_object *zw_json_to_nvm(const char *in_file,
             }
           }
         }
-        printf("NVM image is generated to %sn", out_file);
+        printf("NVM image is generated to %s\n", out_file);
         FILE *fp = fopen(out_file, "wb");
         if (fp)
         {

@@ -263,7 +263,7 @@ int get_file_system_format_from_version(const char *target_version)
     {
       format = 4;
     }
-    else if (prot_minor == 19 || prot_minor == 20 || prot_minor == 21 || prot_minor == 22)
+    else if (prot_minor >= 19 && prot_minor <= 23)
     {
       format = 5;
     }

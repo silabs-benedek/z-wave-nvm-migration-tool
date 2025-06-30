@@ -435,7 +435,7 @@ static bool set_target_version(const char *protocol_version, const char *app_ver
       nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_719_720_xg28);
       return true;
     }
-    else if (prot_minor == 21 || prot_minor == 22)
+    else if (prot_minor >= 21 && prot_minor <= 23)
     {
       target_protocol_version.format = 5;
       target_protocol_version.minor = prot_minor;
@@ -1746,7 +1746,7 @@ json_object *controller_info_nvm_get_json(nvmLayout_t nvm_layout)
 
 /*****************************************************************************/
 
-bool check_data_rate(const int supported_data_rate[], const int value_to_check, uint8_t size)
+static bool check_data_rate(const int supported_data_rate[], const int value_to_check, uint8_t size)
 {
   for (int i = 0; i < size; i++)
   {
@@ -1759,7 +1759,7 @@ bool check_data_rate(const int supported_data_rate[], const int value_to_check, 
 }
 
 /*****************************************************************************/
-uint8_t parse_node_capability(json_object *jo_node, uint8_t *node_reserved)
+static uint8_t parse_node_capability(json_object *jo_node, uint8_t *node_reserved)
 {
   uint8_t capability = 0;
   // Support listening?
@@ -1783,7 +1783,7 @@ uint8_t parse_node_capability(json_object *jo_node, uint8_t *node_reserved)
 }
 
 /*****************************************************************************/
-uint8_t parse_node_security(json_object *jo_node)
+static uint8_t parse_node_security(json_object *jo_node)
 {
   uint8_t security = 0;
   // is Frequent Listening device?
@@ -1812,13 +1812,13 @@ uint8_t parse_node_security(json_object *jo_node)
 static bool parse_route_cache_line_json(json_object *jo_rcl, ROUTECACHE_LINE *rcl)
 {
   enum json_type jo_beaming_type = json_object_get_type(json_object_object_get(jo_rcl, "beaming"));
+  rcl->routecacheLineConfSize = 0x00; // Default to 0x00
   if (jo_beaming_type == json_type_string)
   {
     rcl->routecacheLineConfSize |= strcmp(json_get_string(jo_rcl, "beaming", "250ms", JSON_OPTIONAL), "250ms") == 0 ? 0x20 : 0x40;
   }
 
   rcl->routecacheLineConfSize |= json_get_int(jo_rcl, "protocolRate", 0, JSON_OPTIONAL);
-
   json_get_bytearray(jo_rcl, "repeaterNodeIDs", rcl->repeaterList, MAX_REPEATERS, JSON_OPTIONAL);
 
   return true;
@@ -1842,7 +1842,7 @@ static bool parse_node_table_json(json_object *jo_ntbl)
     uint16_t node_id = atoi(key);
     if (node_id > 0 && node_id <= ZW_CLASSIC_MAX_NODES)
     {
-      SNodeInfo ni_buf[NODEINFOS_PER_FILE] = {};
+      SNodeInfo ni_buf[NODEINFOS_PER_FILE] = {0};
       SNodeInfo *ni;
       if (target_protocol_version.format > 0)
       {
@@ -1854,6 +1854,10 @@ static bool parse_node_table_json(json_object *jo_ntbl)
         {
           READ_PROT_NVM(file_id, ni_buf);
         }
+        else 
+        {
+          memset(ni_buf, 0xFF, FILE_SIZE_NODEINFO_V1);
+        }
         ni = &ni_buf[(node_id - 1) % NODEINFOS_PER_FILE];
       }
       else
@@ -1864,13 +1868,14 @@ static bool parse_node_table_json(json_object *jo_ntbl)
         ZW_NodeMaskSetBit(bridge_node_flags, node_id);
       ni->ControllerSucUpdateIndex = json_get_int(jo_node, "sucUpdateIndex", 0, JSON_REQUIRED);
       json_get_nodemask(jo_node, "neighbours", (uint8_t *)&ni->neighboursInfo, JSON_REQUIRED);
+      ni->NodeInfo.reserved = 0;
       ni->NodeInfo.capability = parse_node_capability(jo_node, &ni->NodeInfo.reserved);
       ni->NodeInfo.security = parse_node_security(jo_node);
       ni->NodeInfo.generic = json_get_int(jo_node, "genericDeviceClass", 0, JSON_REQUIRED);
       ni->NodeInfo.specific = json_get_int(jo_node, "specificDeviceClass", 0, JSON_REQUIRED);
       if (ni->NodeInfo.specific)
       {
-        ni->NodeInfo.security != ZWAVE_NODEINFO_SPECIFIC_DEVICE_TYPE;
+        ni->NodeInfo.security |= ZWAVE_NODEINFO_SPECIFIC_DEVICE_TYPE;
       }
       ZW_NodeMaskSetBit(node_info_exists, node_id);
       if (target_protocol_version.format > 0)
@@ -1897,6 +1902,10 @@ static bool parse_node_table_json(json_object *jo_ntbl)
         if (ec == ECODE_NVM3_OK)
         {
           READ_PROT_NVM(file_id, node_rc_buf);
+        }
+        else 
+        {
+          memset(node_rc_buf, 0xFF, FILE_SIZE_NODEROUTECAHE_V1);
         }
         node_rc = &node_rc_buf[(node_id - 1) % NODEROUTECACHES_PER_FILE];
       }
@@ -1977,10 +1986,15 @@ static bool parse_lr_node_table_json(json_object *jo_lrntbl)
         {
           READ_PROT_NVM(file_id, ni_buf);
         }
+        else 
+        {
+          memset(ni_buf, 0xFF, FILE_SIZE_NODEINFO_LR);
+        }
         ZW_NodeMaskSetBit(lr_node_info_exists, node_id - ZW_LR_MIN_NODE_ID + 1);
         ni = &ni_buf[(node_id - ZW_LR_MIN_NODE_ID) % LR_NODEINFOS_PER_FILE];
 
         enum json_type jo_frequent_listening_type = json_object_get_type(json_object_object_get(jo_lrnode, "isFrequentListening"));
+        ni->packedInfo = 0;
         if (jo_frequent_listening_type == json_type_string)
         {
           ni->packedInfo |= (json_get_string(jo_lrnode, "isFrequentListening", "250ms", JSON_REQUIRED) == "250ms") ? ZWAVE_NODEINFO_SENSOR_MODE_WAKEUP_250 : ZWAVE_NODEINFO_SENSOR_MODE_WAKEUP_1000;
@@ -1989,7 +2003,7 @@ static bool parse_lr_node_table_json(json_object *jo_lrntbl)
         ni->packedInfo |= json_get_bool(jo_lrnode, "isListening", false, JSON_REQUIRED) ? NODEINFO_FLAG_LISTENING : 0x00;
         ni->packedInfo |= json_get_bool(jo_lrnode, "isRouting", false, JSON_REQUIRED) ? NODEINFO_FLAG_ROUTING : 0x00;
         ni->packedInfo |= json_get_bool(jo_lrnode, "optionalFunctionality", false, JSON_REQUIRED) ? NODEINFO_FLAG_OPTIONAL : 0x00;
-        ni->packedInfo |= json_get_bool(jo_lrnode, "supportsBeaming", false, JSON_REQUIRED) ? NODEINFO_FLAG_BEAM : 0x0;
+        ni->packedInfo |= json_get_bool(jo_lrnode, "supportsBeaming", false, JSON_REQUIRED) ? NODEINFO_FLAG_BEAM : 0x00;
 
         ni->generic = json_get_int(jo_lrnode, "genericDeviceClass", 0, JSON_REQUIRED);
         ni->specific = json_get_int(jo_lrnode, "specificDeviceClass", 0, JSON_REQUIRED);
@@ -2044,7 +2058,8 @@ static bool parse_lr_node_table_json(json_object *jo_lrntbl)
 /*****************************************************************************/
 static bool parse_suc_state_json(json_object *jo_suc, uint8_t *last_suc_index)
 {
-  SSucNodeList suc_node_list = {};
+  SSucNodeList suc_node_list;
+  memset(&suc_node_list, 0xFF, sizeof(suc_node_list));
   {
     for (int i = 0; (i < json_object_array_length(jo_suc)) && (i < SUC_MAX_UPDATES); i++)
     {
@@ -2061,6 +2076,7 @@ static bool parse_suc_state_json(json_object *jo_suc, uint8_t *last_suc_index)
       int npar = 0;
 
       // Add supportedCCs to nodeInfo
+      memset(suc_entry->nodeInfo, 0x00, SUC_UPDATE_NODEPARM_MAX);
       if (jo_supportedCCs && json_object_get_type(jo_supportedCCs) == json_type_array)
       {
         for (int k = 0; k < json_object_array_length(jo_supportedCCs) && npar < SUC_UPDATE_NODEPARM_MAX; k++)
@@ -2101,6 +2117,7 @@ static bool parse_suc_state_json_nvm719(json_object *jo_suc, uint8_t *last_suc_i
   for (int i = 0; (i < jo_suc_len) && (i < SUC_MAX_UPDATES); i += 8)
   {
     SSucNodeList_V5 suc_node_list = {};
+    memset(&suc_node_list, 0xFF, sizeof(suc_node_list));
     for (int j = 0; (j < SUCNODES_PER_FILE) && (i + j < jo_suc_len); j++)
     {
       json_object *jo_suc_upd = json_object_array_get_idx(jo_suc, i + j);
@@ -2115,6 +2132,7 @@ static bool parse_suc_state_json_nvm719(json_object *jo_suc, uint8_t *last_suc_i
       int npar = 0;
 
       // Add supportedCCs to nodeInfo
+      memset(suc_entry->nodeInfo, 0x00, SUC_UPDATE_NODEPARM_MAX);
       if (jo_supportedCCs && json_object_get_type(jo_supportedCCs) == json_type_array)
       {
         for (int k = 0; k < json_object_array_length(jo_supportedCCs) && npar < SUC_UPDATE_NODEPARM_MAX; k++)

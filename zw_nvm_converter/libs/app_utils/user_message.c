@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include "user_message.h"
 
-static message_severity_t severity_limit = MSG_WARNING;  // Show warnings and above
+static message_severity_t severity_limit = MSG_ERROR;  // Only show errors
 
 message_severity_t set_message_level(message_severity_t severity)
 {

@@ -6,7 +6,7 @@
 /** x.X.x: Minor version of the driver */
 #define ZWAVE_NVM_TOOL_VERSION_MINOR      0
 /** x.x.X: Revision of the driver */
-#define ZWAVE_NVM_TOOL_VERSION_REVISION   0
+#define ZWAVE_NVM_TOOL_VERSION_REVISION   1
 /* Some helper defines to get a version string */
 #define ZWAVE_NVM_TOOL_VERSTR2(x) #x
 #define ZWAVE_NVM_TOOL_VERSTR(x) ZWAVE_NVM_TOOL_VERSTR2(x)
