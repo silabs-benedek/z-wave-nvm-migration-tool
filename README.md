@@ -1,5 +1,5 @@
-# Z-WAVE NVM TOOL 
-The Z-Wave NVM tool simplifies the process of reading an NVM3 image and converting it into a human-readable JSON format. It also provides functionality to upgrade NVM3 files to newer versions, facilitating controller migration while preserving Z-Wave network information.
+# Z-Wave NVM Migration Tool
+The Z-Wave NVM migration tool simplifies the process of reading an NVM3 image and converting it into a human-readable JSON format. It also provides functionality to upgrade NVM3 files to newer versions, facilitating controller migration while preserving Z-Wave network information.
 ****
 
 ## Build Instructions
