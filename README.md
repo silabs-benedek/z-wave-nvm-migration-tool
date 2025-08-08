@@ -33,7 +33,7 @@ $ sudo apt install make git sudo
 ```option(ENABLE_DEBUG "Debug Mode is ON/OFF" ON)```
 
 **Download and build process**
-- Download the tar.gz or the.zip file for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
+- Download the `tar.gz` or the `.zip` file for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 - Unzip the file
 - Build via steps below
 
