@@ -19,7 +19,7 @@ sudo dpkg -i ./*.deb \
 ```
 
 ### Build from source
-The project is CMake based, to prepare the environment, have a look at [./helper.mk](./helper.mk)'s details for needed steps to setup developer system before using CMake normally.
+The project is CMake based, to prepare the environment, have a look at [./helper.mk](./helper.mk)'s details for needed steps to set up the developer system before using CMake normally.
 
 At the moment stable version of Debian (12) is supported, so it should work also in other Debian based distros (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
 
@@ -116,7 +116,7 @@ $ ./z-wave-nvm-migration-tool -u nvm_7_18.json 7.22.0 zwave_data_description_sch
 ```
 > **_Note:_** If the upgrade mode `-u` is used with the same version as the current protocol version, any missing objects for that version will be added to the JSON file according to the schema.
 
-> **_Note:_** The `-o` option is required to specify the output filename (e.g., `nvm_7_22_0.json`). If option `-o` is omited, the tool will automatically generate an output filename.
+> **_Note:_** The `-o` option is required to specify the output filename (e.g., `nvm_7_22_0.json`). If option `-o` is omitted, the tool will automatically generate an output filename.
 
 **Step 3**: Using the newly upgraded JSON data file (7.22.0) to generate a NVM3 file
 ```sh
@@ -124,7 +124,7 @@ $ ./z-wave-nvm-migration-tool -i nvm_7_22_0.json EFR32XG23 -o nvm_7_22_0.bin
 ```
 - NVM3 data file has been generated for hardware `EFR32XG23` 
 > **_Note:_** Supported parts: EFR32XG13 and EFR32XG14 (Series 1); EFR32XG23 and EFR32XG28 (Series 2).
-- This NVM3 data file can be flash to other controllers using `commander` or serialAPI using `zw_programmer`
+- This NVM3 data file can be flashed to other controllers using `commander` or serialAPI using `zw_programmer`
 
 **Step 4**: OTW the controller (EFR32XG23) to version 7.22.0 and flash the newly upgraded NVM3 image. 
 Refer to [Flashing NVM3 image to Controller](#flashing-nvm-image-to-controller)
@@ -141,7 +141,7 @@ This file can be updated either by manual modification or by utilizing the `-u` 
 
 #### 1. Manually (to inspect the data in the NVM3 file): 
 
-**Step 1**:	Read data from `nvm_7_21_0.bin` and save to json file
+**Step 1**:	Read data from `nvm_7_21_0.bin` and save to a JSON file
 
 ```sh
 $ ./z-wave-nvm-migration-tool -e nvm_7_21_0.bin -o nvm_7_21_0.json
