@@ -60,7 +60,7 @@ z-wave-nvm-migration-tool/
 ```
 > **_Note:_** The pre-built binary is placed in pre_built folder.
 
-> **_Note:_** `zwave_data_description_scheme.json` is the schema file containing description of all properties of Z-Wave objects that exist in a NVM3 file and is used for the migration process.
+> **_Note:_** `zwave_data_description_scheme.json` is the schema file containing description of all properties of Z-Wave objects that exist in an NVM3 file and is used for the migration process.
 
 ## Usage
 ```sh
@@ -118,7 +118,7 @@ $ ./z-wave-nvm-migration-tool -u nvm_7_18.json 7.22.0 zwave_data_description_sch
 
 > **_Note:_** The `-o` option is required to specify the output filename (e.g., `nvm_7_22_0.json`). If option `-o` is omitted, the tool will automatically generate an output filename.
 
-**Step 3**: Using the newly upgraded JSON data file (7.22.0) to generate a NVM3 file
+**Step 3**: Using the newly upgraded JSON data file (7.22.0) to generate an NVM3 file
 ```sh
 $ ./z-wave-nvm-migration-tool -i nvm_7_22_0.json EFR32XG23 -o nvm_7_22_0.bin 
 ```
@@ -153,7 +153,7 @@ $ ./z-wave-nvm-migration-tool -e nvm_7_21_0.bin -o nvm_7_21_0.json
 $ ./z-wave-nvm-migration-tool -u nvm_7_21_0.json 7.21.0 zwave_data_description_scheme.json -o nvm_7_21_0_adding_missing_keys.json
 ```
 
-**Step 3**: Using the newly upgraded JSON data file (7.21.0) to generate a NVM3 file
+**Step 3**: Using the newly upgraded JSON data file (7.21.0) to generate an NVM3 file
 ```sh
 $ ./z-wave-nvm-migration-tool -i nvm_7_21_0_adding_missing_keys.json EFR32XG23 -o nvm_7_21_0_adding_missing_keys.bin 
 ```
