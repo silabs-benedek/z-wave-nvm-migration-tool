@@ -21,7 +21,7 @@ sudo dpkg -i ./*.deb \
 ### Build from source
 The project is CMake based, to prepare the environment, have a look at [./helper.mk](./helper.mk)'s details for needed steps to setup developer system before using CMake normally.
 
-At the moment stable version of Debian (12) is supported, so it should work also in relatives projects (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
+At the moment stable version of Debian (12) is supported, so it should work also in other Debian based distros (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
 
 **Requirements**: 
 Install dependencies 
