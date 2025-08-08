@@ -23,20 +23,22 @@ The project is CMake based, to prepare the environment, have a look at [./helper
 
 At the moment stable version of Debian (12) is supported, so it should work also in other Debian based distros (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
 
-**Requirements**: 
-Install dependencies 
+**Requirements**:
+
+Install dependencies
 ```sh
 $ sudo apt install make git sudo
-$ ./helper.mk setup 
 ```
 > Note: json-c requires cmake from v3.9. To build with "Debug mode", please edit 
 ```option(ENABLE_DEBUG "Debug Mode is ON/OFF" ON)```
 
 **Download and build process**
-- Download the .zip file 
+- Download the tar.gz or the.zip file for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 - Unzip the file
 - Build via steps below
+
 ```sh
+$ ./helper.mk setup
 $ ./helper.mk VERBOSE=1 # Default build tasks verbosely (depends on setup)
 ```
 An executable will be created in build folder. 
