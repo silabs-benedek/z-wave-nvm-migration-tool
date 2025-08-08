@@ -9,7 +9,7 @@ The Z-Wave NVM migration tool simplifies the process of reading an NVM3 image an
 
 > **_Note:_** The following commands are executed on the Ubuntu terminal.
 ### Install from release packages
-Download the release packages for various platforms from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
+Download the corresponding release package (.deb) for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 
 Install the `.deb` package on your system using the following commands:
 ```sh
