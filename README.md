@@ -128,7 +128,7 @@ $ ./z-wave-nvm-migration-tool -i nvm_7_22_0.json EFR32XG23 -o nvm_7_22_0.bin
 > **_Note:_** Supported parts: EFR32XG13 and EFR32XG14 (Series 1); EFR32XG23 and EFR32XG28 (Series 2).
 - This NVM3 data file can be flashed to other controllers using `commander` or serialAPI using `zw_programmer`
 
-**Step 4**: OTW the controller (EFR32XG23) to version 7.22.0 and flash the newly upgraded NVM3 image. 
+**Step 4**: Upgrade (OTW) the controller (EFR32XG23) to version 7.22.0 and upload/flash the newly upgraded NVM3 image. 
 Refer to [Flashing NVM3 image to Controller](#flashing-nvm-image-to-controller)
 
 #### 2. Migrate using `-m` option:
