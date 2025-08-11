@@ -1,5 +1,5 @@
-# Z-WAVE NVM TOOL 
-The Z-Wave NVM tool simplifies the process of reading an NVM3 image and converting it into a human-readable JSON format. It also provides functionality to upgrade NVM3 files to newer versions, facilitating controller migration while preserving Z-Wave network information.
+# Z-Wave NVM Migration Tool
+The Z-Wave NVM migration tool simplifies the process of reading an NVM3 image and converting it into a human-readable JSON format. It also provides functionality to upgrade NVM3 files to newer versions, facilitating controller migration while preserving Z-Wave network information.
 ****
 
 ## Build Instructions
@@ -9,7 +9,7 @@ The Z-Wave NVM tool simplifies the process of reading an NVM3 image and converti
 
 > **_Note:_** The following commands are executed on the Ubuntu terminal.
 ### Install from release packages
-Download the release packages for various platforms from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
+Download the corresponding release package (.deb) for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 
 Install the `.deb` package on your system using the following commands:
 ```sh
@@ -19,24 +19,26 @@ sudo dpkg -i ./*.deb \
 ```
 
 ### Build from source
-The project is CMake based, to prepare the environment, have a look at [./helper.mk](./helper.mk)'s details for needed steps to setup developer system before using CMake normally.
+The project is CMake based, to prepare the environment, have a look at [./helper.mk](./helper.mk)'s details for needed steps to set up the developer system before using CMake normally.
 
-At the moment stable version of Debian (12) is supported, so it should work also in relatives projects (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
+At the moment stable version of Debian (12) is supported, so it should work also in other Debian based distros (Ubuntu, RaspiOS, WSL2 etc) and should be easy to adapt to other distributions.
 
-**Requirements**: 
-Install dependencies 
+**Requirements**:
+
+Install dependencies
 ```sh
 $ sudo apt install make git sudo
-$ ./helper.mk setup 
 ```
 > Note: json-c requires cmake from v3.9. To build with "Debug mode", please edit 
 ```option(ENABLE_DEBUG "Debug Mode is ON/OFF" ON)```
 
 **Download and build process**
-- Download the .zip file 
+- Download the `tar.gz` or the `.zip` file for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 - Unzip the file
 - Build via steps below
+
 ```sh
+$ ./helper.mk setup
 $ ./helper.mk VERBOSE=1 # Default build tasks verbosely (depends on setup)
 ```
 An executable will be created in build folder. 
@@ -60,7 +62,7 @@ z-wave-nvm-migration-tool/
 ```
 > **_Note:_** The pre-built binary is placed in pre_built folder.
 
-> **_Note:_** `zwave_data_description_scheme.json` is the schema file containing description of all properties of Z-Wave objects that exist in a NVM3 file and is used for the migration process.
+> **_Note:_** `zwave_data_description_scheme.json` is the schema file containing description of all properties of Z-Wave objects that exist in an NVM3 file and is used for the migration process.
 
 ## Usage
 ```sh
@@ -116,17 +118,17 @@ $ ./z-wave-nvm-migration-tool -u nvm_7_18.json 7.22.0 zwave_data_description_sch
 ```
 > **_Note:_** If the upgrade mode `-u` is used with the same version as the current protocol version, any missing objects for that version will be added to the JSON file according to the schema.
 
-> **_Note:_** The `-o` option is required to specify the output filename (e.g., `nvm_7_22_0.json`). If option `-o` is omited, the tool will automatically generate an output filename.
+> **_Note:_** The `-o` option is required to specify the output filename (e.g., `nvm_7_22_0.json`). If option `-o` is omitted, the tool will automatically generate an output filename.
 
-**Step 3**: Using the newly upgraded JSON data file (7.22.0) to generate a NVM3 file
+**Step 3**: Using the newly upgraded JSON data file (7.22.0) to generate an NVM3 file
 ```sh
 $ ./z-wave-nvm-migration-tool -i nvm_7_22_0.json EFR32XG23 -o nvm_7_22_0.bin 
 ```
 - NVM3 data file has been generated for hardware `EFR32XG23` 
 > **_Note:_** Supported parts: EFR32XG13 and EFR32XG14 (Series 1); EFR32XG23 and EFR32XG28 (Series 2).
-- This NVM3 data file can be flash to other controllers using `commander` or serialAPI using `zw_programmer`
+- This NVM3 data file can be flashed to other controllers using `commander` or serialAPI using `zw_programmer`
 
-**Step 4**: OTW the controller (EFR32XG23) to version 7.22.0 and flash the newly upgraded NVM3 image. 
+**Step 4**: Upgrade (OTW) the controller (EFR32XG23) to version 7.22.0 and upload/flash the newly upgraded NVM3 image. 
 Refer to [Flashing NVM3 image to Controller](#flashing-nvm-image-to-controller)
 
 #### 2. Migrate using `-m` option:
@@ -134,14 +136,14 @@ Refer to [Flashing NVM3 image to Controller](#flashing-nvm-image-to-controller)
 $ ./z-wave-nvm-migration-tool -m nvm_7_18.bin 7.22.0 EFR32XG23 zwave_data_description_scheme.json -o nvm_7_22_0.bin 
 ```
 
-### Use case 2: Adding missing data for a version 7.21.0 for 700 Series (XG13/XG14) 
+### Use case 2: Adding missing data for a version 7.21.0 for 700 Series (ZG13/ZGM130S/ZG14) 
 NVM3 images generated by 700 Series controllers with firmware version 7.21.0 will lack the application data object. For instance, consider the file `nvm_7_21_0.bin`.
 
 This file can be updated either by manual modification or by utilizing the `-u` option to add missing objects according to the schema.
 
 #### 1. Manually (to inspect the data in the NVM3 file): 
 
-**Step 1**:	Read data from `nvm_7_21_0.bin` and save to json file
+**Step 1**:	Read data from `nvm_7_21_0.bin` and save to a JSON file
 
 ```sh
 $ ./z-wave-nvm-migration-tool -e nvm_7_21_0.bin -o nvm_7_21_0.json
@@ -153,7 +155,7 @@ $ ./z-wave-nvm-migration-tool -e nvm_7_21_0.bin -o nvm_7_21_0.json
 $ ./z-wave-nvm-migration-tool -u nvm_7_21_0.json 7.21.0 zwave_data_description_scheme.json -o nvm_7_21_0_adding_missing_keys.json
 ```
 
-**Step 3**: Using the newly upgraded JSON data file (7.21.0) to generate a NVM3 file
+**Step 3**: Using the newly upgraded JSON data file (7.21.0) to generate an NVM3 file
 ```sh
 $ ./z-wave-nvm-migration-tool -i nvm_7_21_0_adding_missing_keys.json EFR32XG23 -o nvm_7_21_0_adding_missing_keys.bin 
 ```
