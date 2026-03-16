@@ -163,33 +163,28 @@ Ecode_t nvm3_readData_print_error(nvm3_Handle_t *h,
   message_severity_t  msg_severity = MSG_DIAG;
   const char         *msg_prefix   = "SUCCESS:";
 
-  if(key == FILE_ID_PROPRIETARY_1) {
-    if (ECODE_NVM3_ERR_KEY_NOT_FOUND == ec)
-    {
-      // A lot of nvm seems to miss dcdcConfig
-      msg_severity = MSG_WARNING;
-      msg_prefix   = "WARNING:";
-    }
-    else if (ECODE_NVM3_OK != ec)
-    {
-      msg_severity = MSG_ERROR;
-      msg_prefix   = "ERROR:";
-      nvm3_error_detected = true;
-    }
-  } else {
-    if (ECODE_NVM3_ERR_KEY_NOT_FOUND == ec && (key_is_NOUDEROUTECACHE_V1(key) || key_is_SUC_NODE_LIST_V5(key))) 
-    {
-      //Special case for missing NOUDEROUTECACHE_V1 files.
-    //Dont set ERROR but WARNING since files are not always saved by the SerialAPIController application.
-      msg_severity = MSG_WARNING;
-      msg_prefix   = "WARNING:";
-    }
-    else if (ECODE_NVM3_OK != ec)
-    {
-      msg_severity = MSG_ERROR;
-      msg_prefix   = "ERROR:";
-      nvm3_error_detected = true;
-    }
+  /**
+   * FILE_ID_PROPRIETARY_1: DCDC config - default power mode (AUTO) is used when not present
+   * ZAF_FILE_ID_APP_NAME:  Application display name - will be set to default value
+   *                        by controller_nvm.c if missing (7.20 and above)
+   */
+  bool key_is_optional = (key == FILE_ID_PROPRIETARY_1) || 
+                         (key == ZAF_FILE_ID_APP_NAME) ||
+                         (key == ZAF_FILE_ID_APP_NAME_800s_XG23) ||
+                         (key == ZAF_FILE_ID_APP_NAME_800s_XG28) ||
+                         key_is_NOUDEROUTECACHE_V1(key) ||
+                         key_is_SUC_NODE_LIST_V5(key);
+
+  if (ECODE_NVM3_ERR_KEY_NOT_FOUND == ec && key_is_optional)
+  {
+    msg_severity = MSG_WARNING;
+    msg_prefix   = "WARNING:";
+  }
+  else if (ECODE_NVM3_OK != ec)
+  {
+    msg_severity = MSG_ERROR;
+    msg_prefix   = "ERROR:";
+    nvm3_error_detected = true;
   }
 
   user_message(msg_severity,

@@ -2152,6 +2152,9 @@ static bool parse_app_config_json(json_object *jo_app_config, nvmLayout_t nvm_la
     if (NVM3_700s == nvm_layout)
     {
       WRITE_APP_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
+      // WRITE_PROT_NVM(FILE_ID_PROPRIETARY_1, dcdc);
+      const char * app_name = json_get_string(jo_app_config, "applicationName", "serial_api_controller", JSON_OPTIONAL);
+      WRITE_PROT_NVM(ZAF_FILE_ID_APP_NAME_800s_XG23, app_name);
     }
     else
     {
@@ -2423,7 +2426,7 @@ static bool parse_controller_nvm715_json(json_object *jo_ctrl, nvmLayout_t nvm_l
   ci.ReservedId_LR = json_get_int(jo_ctrl, "reservedIdLR", 0, JSON_REQUIRED);
   ci.SystemState = json_get_int(jo_ctrl, "systemState", 0, JSON_REQUIRED);
   ci.PrimaryLongRangeChannelId = json_get_int(jo_ctrl, "primaryLongRangeChannelId", 0, JSON_REQUIRED);
-  ci.DcdcConfig = json_get_int(jo_ctrl, "dcdcConfig", 0, JSON_REQUIRED);
+  ci.DcdcConfig = json_get_int(jo_ctrl, "dcdcConfig", 0, JSON_OPTIONAL);
 
   controller_configuration.controller_is_secondary = json_get_bool(jo_ctrl, "controllerIsSecondary", false, JSON_REQUIRED);
   controller_configuration.controller_on_other_network = json_get_bool(jo_ctrl, "controllerOnOtherNetwork", false, JSON_REQUIRED);
@@ -2535,7 +2538,7 @@ static bool parse_controller_nvm719_json(json_object *jo_ctrl, nvmLayout_t nvm_l
 
   ci.PrimaryLongRangeChannelId = json_get_int(jo_ctrl, "primaryLongRangeChannelId", 0, JSON_REQUIRED);
   ci.LongRangeChannelAutoMode = json_get_bool(jo_ctrl, "longRangeChannelAutoMode", false, JSON_REQUIRED);
-  int16_t dcdc_config = json_get_int(jo_ctrl, "dcdcConfig", 0, JSON_REQUIRED);
+  int16_t dcdc_config = json_get_int(jo_ctrl, "dcdcConfig", 0, JSON_OPTIONAL);
 
   controller_configuration.controller_is_secondary = json_get_bool(jo_ctrl, "controllerIsSecondary", false, JSON_REQUIRED);
   controller_configuration.controller_on_other_network = json_get_bool(jo_ctrl, "controllerOnOtherNetwork", false, JSON_REQUIRED);
@@ -2630,7 +2633,7 @@ static bool parse_controller_nvm719_json(json_object *jo_ctrl, nvmLayout_t nvm_l
 
   if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 20) || (target_protocol_version.major == 8))
   {
-    const char *app_name_src = json_get_string(jo_ctrl, "applicationName", "", JSON_OPTIONAL);
+    const char *app_name_src = json_get_string(jo_ctrl, "applicationName", "serial_api_controller", JSON_OPTIONAL);
     strncpy(app_name, app_name_src, sizeof(app_name) - 1);
     app_name[sizeof(app_name) - 1] = '\0'; // Ensure null termination
     if (NVM3_700s == nvm_layout)
