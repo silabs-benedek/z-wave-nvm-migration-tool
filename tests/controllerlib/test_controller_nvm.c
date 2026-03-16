@@ -99,6 +99,12 @@ void test_set_target_version(void)
   TEST_ASSERT_TRUE(set_target_version("7.23.0", "7.23.0"));
   TEST_ASSERT_EQUAL_INT(5, target_protocol_version.format);
   RESET_TARGET_VERSION();
+  TEST_ASSERT_TRUE(set_target_version("8.0.0", "8.0.0"));
+  TEST_ASSERT_EQUAL_INT(5, target_protocol_version.format);
+  RESET_TARGET_VERSION();
+  TEST_ASSERT_TRUE(set_target_version("8.0.1", "8.0.1"));
+  TEST_ASSERT_EQUAL_INT(5, target_protocol_version.format);
+  RESET_TARGET_VERSION();
   /* False if version is not supported */
   TEST_ASSERT_FALSE(set_target_version("8.23.0", "8.23.0"));
   TEST_ASSERT_TRUE(set_target_version("7.24.0", "7.24.0"));

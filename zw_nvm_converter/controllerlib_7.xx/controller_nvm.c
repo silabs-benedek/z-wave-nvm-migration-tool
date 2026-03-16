@@ -367,74 +367,13 @@ static bool set_target_version(const char *protocol_version, const char *app_ver
   nvm3_files_v5_800s_721 = (hardware_info == EFR32XG28) ? (nvm3_file_descriptor_t *)&nvm3_files_v5_800s_721_xg28 : (nvm3_file_descriptor_t *)&nvm3_files_v5_800s_721_zgm230;
 
   // Set the target protocol version
-  if (prot_major == 7)
-  {
-    target_protocol_version.major = 7;
-    if (prot_minor == 11)
-    {
-      target_protocol_version.format = 0;
-      target_protocol_version.minor = 11;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v0;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v0);
-      return true;
-    }
-    else if (prot_minor == 12)
-    {
-      target_protocol_version.format = 1;
-      target_protocol_version.minor = 12;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v1;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v1);
-      return true;
-    }
-    else if (prot_minor == 15)
-    {
-      target_protocol_version.format = 2;
-      target_protocol_version.minor = 15;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v2;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v2);
-      return true;
-    }
-    else if (prot_minor == 16)
-    {
-      target_protocol_version.format = 3;
-      target_protocol_version.minor = 16;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v3;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v3);
-      return true;
-    }
-    else if (prot_minor == 17)
-    {
-      target_protocol_version.format = 4;
-      target_protocol_version.minor = 17;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v4;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v4);
-      return true;
-    }
-    else if (prot_minor == 18)
-    {
-      target_protocol_version.format = 4;
-      target_protocol_version.minor = 18;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_protocol_files_v4;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v4);
-      return true;
-    }
-    else if (prot_minor == 19 || prot_minor == 20)
-    {
-      target_protocol_version.format = 5;
-      target_protocol_version.minor = prot_minor;
-      target_protocol_version.patch = prot_patch;
-      nvm3_current_protocol_files = nvm3_files_v5_800s_719_720;
-      nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_719_720_xg28);
-      return true;
-    }
-    else if (prot_minor >= 21 && prot_minor <= 24)
-    {
+  switch(prot_major) {
+    case 8: {
+      // Latest supported version is 8.1.0
+      if (prot_minor > 0 || prot_patch > 1) {
+        return false;
+      }
+      target_protocol_version.major = 8;
       target_protocol_version.format = 5;
       target_protocol_version.minor = prot_minor;
       target_protocol_version.patch = prot_patch;
@@ -442,27 +381,102 @@ static bool set_target_version(const char *protocol_version, const char *app_ver
       nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_721_xg28);
       return true;
     }
+    case 7: {
+      target_protocol_version.major = 7;
+      if (prot_minor == 11)
+      {
+        target_protocol_version.format = 0;
+        target_protocol_version.minor = 11;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v0;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v0);
+        return true;
+      }
+      else if (prot_minor == 12)
+      {
+        target_protocol_version.format = 1;
+        target_protocol_version.minor = 12;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v1;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v1);
+        return true;
+      }
+      else if (prot_minor == 15)
+      {
+        target_protocol_version.format = 2;
+        target_protocol_version.minor = 15;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v2;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v2);
+        return true;
+      }
+      else if (prot_minor == 16)
+      {
+        target_protocol_version.format = 3;
+        target_protocol_version.minor = 16;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v3;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v3);
+        return true;
+      }
+      else if (prot_minor == 17)
+      {
+        target_protocol_version.format = 4;
+        target_protocol_version.minor = 17;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v4;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v4);
+        return true;
+      }
+      else if (prot_minor == 18)
+      {
+        target_protocol_version.format = 4;
+        target_protocol_version.minor = 18;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_protocol_files_v4;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_protocol_files_v4);
+        return true;
+      }
+      else if (prot_minor == 19 || prot_minor == 20)
+      {
+        target_protocol_version.format = 5;
+        target_protocol_version.minor = prot_minor;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_files_v5_800s_719_720;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_719_720_xg28);
+        return true;
+      }
+      else if (prot_minor >= 21 && prot_minor <= 24)
+      {
+        target_protocol_version.format = 5;
+        target_protocol_version.minor = prot_minor;
+        target_protocol_version.patch = prot_patch;
+        nvm3_current_protocol_files = nvm3_files_v5_800s_721;
+        nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_721_xg28);
+        return true;
+      }
+    }
+    default: {
+      return false;
+    }
   }
-  // Return false if protocol version is not supported 
-  return false;
 }
 
 static bool app_nvm_is_pre_v7_15_3(uint8_t major, uint8_t minor, uint8_t patch)
 {
-  if ((major == 7) && (minor >= 16))
-  {
-    return false;
-  }
-  else if ((major == 7) && (minor == 15) && (patch >= 3))
-  {
-    return false;
-  }
-  return true;
+  return (
+    // [0-6].x.x
+    (major < 7) ||
+    // 7.[0-14].x
+    ((major == 7) && (minor < 15)) ||
+    // 7.15.[0-2].x
+    ((major == 7) && (minor == 15) && (patch < 3))
+  );
 }
 
 static bool app_nvm_is_pre_v7_18_1(uint8_t major, uint8_t minor, uint8_t patch)
 {
-  if ((major == 7) && (minor >= 19))
+  if ((major >= 8) || ((major == 7) && (minor >= 19)))
   {
     return false;
   }
@@ -473,6 +487,11 @@ static bool app_nvm_is_pre_v7_18_1(uint8_t major, uint8_t minor, uint8_t patch)
   return true;
 }
 
+static bool app_nvm_is_v8(uint8_t major, uint8_t minor, uint8_t patch)
+{
+  // Match future versions until breaking changes are introduced
+  return (major >= 8);
+}
 static bool app_nvm_is_v7_19(uint8_t major, uint8_t minor, uint8_t patch)
 {
   if ((major == 7) && (minor == 19))
@@ -826,7 +845,29 @@ static json_object *app_config_to_json(nvmLayout_t nvm_layout)
 {
   Ecode_t ec;
   json_object *jo = json_object_new_object();
-  if (app_nvm_is_pre_v7_15_3(target_app_version.major, target_app_version.minor, target_app_version.patch))
+  if (app_nvm_is_v8(target_app_version.major, target_app_version.minor, target_app_version.patch))
+  {
+    SApplicationConfiguration_7_21_x ac = {};
+    if (nvm_layout == NVM3_800s_FROM_719 || (nvm_layout == NVM3_800s_PRIOR_719 && target_app_version.minor >= 19))
+    {
+      ec = READ_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
+    }
+    else
+    {
+      ec = READ_APP_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
+    }
+
+    if (ECODE_NVM3_OK == ec)
+    {
+      json_add_int(jo, "rfRegion", ac.rfRegion);
+      json_add_int(jo, "txPower", ac.iTxPower);
+      json_add_int(jo, "measured0dBm", ac.ipower0dbmMeasured);
+      json_add_bool(jo, "enablePTI", ac.enablePTI);
+      json_add_int(jo, "maxTxPower", ac.maxTxPower);
+      json_add_int(jo, "nodeIdType", ac.nodeIdBaseType);
+    }
+  }
+  else if (app_nvm_is_pre_v7_15_3(target_app_version.major, target_app_version.minor, target_app_version.patch))
   {
     SApplicationConfiguration_prior_7_15_3 ac = {};
     ec = READ_APP_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
@@ -1501,7 +1542,7 @@ static json_object *nvm_from_719_controller_info_to_json(nvmLayout_t nvm_layout)
   json_object_object_add(jo, "protocolVersion", version_to_json(le32toh(prot_version_le)));
   json_object_object_add(jo, "applicationVersion", version_to_json(le32toh(app_version_le)));
 
-  if (target_protocol_version.major == 7 && target_protocol_version.minor >= 20)
+  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 20) || (target_protocol_version.major == 8))
   {
     if (nvm_layout == NVM3_700s)
     {
@@ -1603,7 +1644,7 @@ json_object *controller_info_nvm_get_json(nvmLayout_t nvm_layout)
   json_add_int(jo, "format", (int32_t)target_protocol_version.format);
   json_add_int(jo, "applicationFileFormat", (int32_t)target_app_version.format);
 
-  if (target_protocol_version.major == 7 && target_protocol_version.minor >= 19)
+  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 19) || (target_protocol_version.major == 8))
   {
     json_object_object_add(jo, "controller", nvm_from_719_controller_info_to_json(nvm_layout));
   }
@@ -2099,6 +2140,24 @@ static bool parse_app_config_json(json_object *jo_app_config, nvmLayout_t nvm_la
       WRITE_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
     }
   }
+  else if (app_nvm_is_v8(target_protocol_version.major, target_protocol_version.minor, target_protocol_version.patch))
+  {
+    SApplicationConfiguration_7_21_x ac = {};
+    ac.rfRegion = json_get_int(jo_app_config, "rfRegion", 0, JSON_OPTIONAL);
+    ac.iTxPower = json_get_int(jo_app_config, "txPower", 0, JSON_OPTIONAL);
+    ac.ipower0dbmMeasured = json_get_int(jo_app_config, "measured0dBm", 0, JSON_OPTIONAL);
+    ac.enablePTI = json_get_bool(jo_app_config, "enablePTI", 0, JSON_OPTIONAL);
+    ac.maxTxPower = json_get_int(jo_app_config, "maxTxPower", 140, JSON_OPTIONAL);
+    ac.nodeIdBaseType = json_get_int(jo_app_config, "nodeIdType", 0, JSON_OPTIONAL);
+    if (NVM3_700s == nvm_layout)
+    {
+      WRITE_APP_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
+    }
+    else
+    {
+      WRITE_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
+    }
+  }
   else
   {
     int nodeIdBaseType = json_get_int(jo_app_config, "nodeIdType", 0, JSON_OPTIONAL);
@@ -2569,7 +2628,7 @@ static bool parse_controller_nvm719_json(json_object *jo_ctrl, nvmLayout_t nvm_l
     WRITE_PROT_NVM(FILE_ID_APPLICATIONDATA, ad);
   }
 
-  if (target_protocol_version.major == 7 && target_protocol_version.minor >= 20)
+  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 20) || (target_protocol_version.major == 8))
   {
     const char *app_name_src = json_get_string(jo_ctrl, "applicationName", "", JSON_OPTIONAL);
     strncpy(app_name, app_name_src, sizeof(app_name) - 1);
@@ -2691,7 +2750,7 @@ bool controller_parse_json(json_object *jo, nvmLayout_t nvm_layout)
     return false;
   }
 
-  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 19))
+  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 19) || (target_protocol_version.major == 8))
   {
     if (false == parse_controller_nvm719_json(jo_ref, nvm_layout))
     {
