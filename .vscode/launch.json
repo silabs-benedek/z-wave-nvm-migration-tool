@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/debug/z-wave-nvm-migration-toold",
+      "args": [ ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": true,
+      "MIMode": "gdb",
+      "miDebuggerArgs": "-x ${workspaceFolder}/.vscode/gdb_init_args",
+      "symbolLoadInfo": { "loadAll": false },
+      "preLaunchTask": "Ask for debug args"
+    }
+  ]
+}

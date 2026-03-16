@@ -29,13 +29,29 @@ Install dependencies
 ```sh
 $ sudo apt install make git sudo
 ```
-> Note: json-c requires cmake from v3.9. To build with "Debug mode", please edit 
-```option(ENABLE_DEBUG "Debug Mode is ON/OFF" ON)```
+> Note: json-c requires cmake from v3.9. For Debug mode use the `debug` preset (`cmake --preset debug` / `cmake --build --preset debug`), or with helper.mk: `./helper.mk ENABLE_DEBUG=ON` (use `./helper.mk reconfigure ENABLE_DEBUG=ON` if a build dir already exists).
 
 **Download and build process**
+
 - Download the `tar.gz` or the `.zip` file for your platform from the [Release page](https://github.com/SiliconLabsSoftware/z-wave-nvm-migration-tool/releases).
 - Unzip the file
 - Build via steps below
+
+You can build with **CMake presets** (no helper.mk; requires CMake 3.21+):
+
+```sh
+# Release build (default)
+$ cmake --preset release
+$ cmake --build --preset release
+
+# Debug build
+$ cmake --preset debug
+$ cmake --build --preset debug
+```
+
+Executables: `build/release/z-wave-nvm-migration-tool` and `build/debug/z-wave-nvm-migration-toold`.
+
+Alternatively, use **helper.mk**:
 
 ```sh
 $ ./helper.mk setup

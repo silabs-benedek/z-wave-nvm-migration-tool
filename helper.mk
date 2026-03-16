@@ -83,6 +83,10 @@ endif
 endif
 
 # Allow overloading from env if needed
+ifdef ENABLE_DEBUG
+cmake_options+=-DENABLE_DEBUG=${ENABLE_DEBUG}
+endif
+
 ifdef VERBOSE
 CMAKE_VERBOSE_MAKEFILE?=${VERBOSE}
 cmake_options+=-DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}

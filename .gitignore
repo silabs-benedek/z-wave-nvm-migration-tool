@@ -55,7 +55,6 @@ dkms.conf
 
 # Exclude CMake build folder 
 build
-.vscode
 
 # More folders
 tmp/
@@ -63,3 +62,10 @@ dist/
 
 # Editors
 *~
+
+# clangd cache
+.cache/
+
+# Debug helper: last args and GDB init (user-specific, not for commit)
+.vscode/last_args
+.vscode/gdb_init_args
