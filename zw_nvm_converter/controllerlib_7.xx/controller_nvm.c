@@ -2215,7 +2215,7 @@ static uint32_t file_version(uint8_t format, uint8_t major, uint8_t minor, uint8
 /*****************************************************************************/
 static bool create_nvm3_version_files(nvmLayout_t nvm_layout)
 {
-  /* We're not really parsing the JSOON file descriptor section here since
+  /* We're not really parsing the JSON file descriptor section here since
    * it contains versions information related to the source device.
    * We're instead generating version files for NVM that contains the
    * series 700 versions this converter is built with.
