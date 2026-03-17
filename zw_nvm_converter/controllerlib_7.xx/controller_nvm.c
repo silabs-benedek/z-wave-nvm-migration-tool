@@ -37,14 +37,6 @@
 #define NVM3_STORAGE_SIZE (72 * 1024)
 static uint8_t nvm3_storage[NVM3_STORAGE_SIZE];
 
-typedef struct
-{
-  uint8_t format;
-  uint8_t major;
-  uint8_t minor;
-  uint8_t patch;
-} target_version;
-
 target_version target_protocol_version = {};
 target_version target_app_version = {};
 

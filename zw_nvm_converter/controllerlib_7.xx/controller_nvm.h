@@ -17,6 +17,15 @@ typedef enum {
     EFR32XG28
 } hardware_info_t;
 
+typedef struct
+{
+  uint8_t format;
+  uint8_t major;
+  uint8_t minor;
+  uint8_t patch;
+} target_version;
+
+
 bool check_controller_v7_18(const uint8_t *nvm_image, size_t nvm_image_size, nvmLayout_t nvm_layout);
 bool check_controller_nvm(const uint8_t *nvm_image, size_t nvm_image_size, nvmLayout_t nvm_layout);
 bool open_controller_nvm(const uint8_t *nvm_image, size_t nvm_image_size, nvmLayout_t nvm_layout);
