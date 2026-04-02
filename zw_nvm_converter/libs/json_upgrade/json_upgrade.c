@@ -241,7 +241,12 @@ int get_app_file_format_from_version(const char *target_version){
     exit(EXIT_FAILURE);
   }
 
-  if (prot_major == 7)
+  if (prot_major >= 8)
+  {
+    /* Same application NVM file layout as 7.24 / SDK 8 lineage */
+    app_format = 1;
+  }
+  else if (prot_major == 7)
   {
     if (prot_minor >= 11 && prot_minor <= 23)
     {
@@ -276,7 +281,12 @@ int get_file_system_format_from_version(const char *target_version)
     exit(EXIT_FAILURE);
   }
 
-  if (prot_major == 7)
+  if (prot_major >= 8)
+  {
+    /* Protocol 8+ uses the same NVM3 filesystem descriptor set as 7.19–7.24 (format 5). */
+    format = 5;
+  }
+  else if (prot_major == 7)
   {
     if (prot_minor == 11)
     {

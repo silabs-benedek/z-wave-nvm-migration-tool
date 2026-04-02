@@ -76,6 +76,15 @@ void test_get_file_system_format_from_version(void) {
     TEST_ASSERT_EQUAL(5, get_file_system_format_from_version("7.20.0"));
     TEST_ASSERT_EQUAL(5, get_file_system_format_from_version("7.21.4"));
     TEST_ASSERT_EQUAL(5, get_file_system_format_from_version("7.23.2"));
+    TEST_ASSERT_EQUAL(5, get_file_system_format_from_version("8.0.0"));
+    TEST_ASSERT_EQUAL(5, get_file_system_format_from_version("9.0.0"));
+}
+
+void test_get_app_file_format_from_version(void)
+{
+    TEST_ASSERT_EQUAL(0, get_app_file_format_from_version("7.19.0"));
+    TEST_ASSERT_EQUAL(1, get_app_file_format_from_version("7.24.0"));
+    TEST_ASSERT_EQUAL(1, get_app_file_format_from_version("8.0.0"));
 }
 
 void test_apply_schema_changes(void)
@@ -233,6 +242,7 @@ int main(void) {
     RUN_TEST(test_handle_version_based_addition_removal_add);
     RUN_TEST(test_handle_version_based_addition_removal_remove);
     RUN_TEST(test_get_file_system_format_from_version);
+    RUN_TEST(test_get_app_file_format_from_version);
     RUN_TEST(test_apply_schema_changes);
     RUN_TEST(test_rearrange_keys);
     return UNITY_END();

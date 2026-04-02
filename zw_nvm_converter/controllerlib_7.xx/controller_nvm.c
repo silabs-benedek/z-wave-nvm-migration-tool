@@ -331,6 +331,33 @@ static nvm3_file_descriptor_t nvm3_app_files[] = {
 /****************************  NVM Basic Handling  ***************************/
 /*****************************************************************************/
 
+/** Compare dotted versions "maj.min.pat"; same ordering as json_upgrade compare_versions(). */
+static int compare_semver_strings(const char *a, const char *b)
+{
+  int am, an, ap, bm, bn, bp;
+  if (sscanf(a, "%d.%d.%d", &am, &an, &ap) != 3)
+  {
+    return -1;
+  }
+  if (sscanf(b, "%d.%d.%d", &bm, &bn, &bp) != 3)
+  {
+    return 1;
+  }
+  if (am != bm)
+  {
+    return (am > bm) ? 1 : -1;
+  }
+  if (an != bn)
+  {
+    return (an > bn) ? 1 : -1;
+  }
+  if (ap != bp)
+  {
+    return (ap > bp) ? 1 : -1;
+  }
+  return 0;
+}
+
 /* Set target protocol and application version for generating nvm image */
 static bool set_target_version(const char *protocol_version, const char *app_version)
 {
@@ -542,6 +569,11 @@ static bool app_nvm_is_pre_v7_19(uint8_t major, uint8_t minor, uint8_t patch)
 static bool protocol_stack_is_7_19_or_newer(uint8_t prot_major, uint8_t prot_minor)
 {
   return (prot_major > 7) || (prot_major == 7 && prot_minor >= 19);
+}
+
+static bool protocol_stack_is_7_20_or_newer(uint8_t prot_major, uint8_t prot_minor)
+{
+  return (prot_major > 7) || (prot_major == 7 && prot_minor >= 20);
 }
 
 /** On 800 series, ZAF app-related keys (app version, APPLICATIONCONFIGURATION, …) are stored in the
@@ -1553,7 +1585,7 @@ static json_object *nvm_from_719_controller_info_to_json(nvmLayout_t nvm_layout)
   json_object_object_add(jo, "protocolVersion", version_to_json(le32toh(prot_version_le)));
   json_object_object_add(jo, "applicationVersion", version_to_json(le32toh(app_version_le)));
 
-  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 20) || (target_protocol_version.major == 8))
+  if (protocol_stack_is_7_20_or_newer(target_protocol_version.major, target_protocol_version.minor))
   {
     if (nvm_layout == NVM3_700s)
     {
@@ -2642,7 +2674,7 @@ static bool parse_controller_nvm719_json(json_object *jo_ctrl, nvmLayout_t nvm_l
     WRITE_PROT_NVM(FILE_ID_APPLICATIONDATA, ad);
   }
 
-  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 20) || (target_protocol_version.major == 8))
+  if (protocol_stack_is_7_20_or_newer(target_protocol_version.major, target_protocol_version.minor))
   {
     const char *app_name_src = json_get_string(jo_ctrl, "applicationName", "serial_api_controller", JSON_OPTIONAL);
     strncpy(app_name, app_name_src, sizeof(app_name) - 1);
@@ -2695,7 +2727,7 @@ bool json_get_nvm_layout(const char *device_info, json_object *jo, nvmLayout_t *
 
   if (strcmp(device_info, "EFR32XG28") == 0 || strcmp(device_info, "EFR32XG23") == 0)
   {
-    if (strncmp(protocol_version, "7.19", 4) >= 0)
+    if (compare_semver_strings(protocol_version, "7.19.0") >= 0)
     {
       *nvm_layout = NVM3_800s_FROM_719;
       hardware_info = (strcmp(device_info, "EFR32XG28") == 0) ? EFR32XG28 : EFR32XG23;
