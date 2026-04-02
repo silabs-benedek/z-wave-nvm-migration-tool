@@ -388,14 +388,16 @@ static bool set_target_version(const char *protocol_version, const char *app_ver
   // Set the target protocol version
   switch(prot_major) {
     case 8: {
-      // Latest supported version is 8.1.0
-      if (prot_minor > 0 || prot_patch > 1) {
+      /* Same NVM3 descriptor set as 7.21+ (format 5); minor/patch stored in ZW_VERSION file. */
+      if (prot_minor > 255 || prot_patch > 255)
+      {
+        printf("Invalid protocol version (component out of range): %s\n", protocol_version);
         return false;
       }
       target_protocol_version.major = 8;
       target_protocol_version.format = 5;
-      target_protocol_version.minor = prot_minor;
-      target_protocol_version.patch = prot_patch;
+      target_protocol_version.minor = (uint8_t)prot_minor;
+      target_protocol_version.patch = (uint8_t)prot_patch;
       nvm3_current_protocol_files = nvm3_files_v5_800s_721;
       nvm3_current_protocol_files_size = sizeof_array(nvm3_files_v5_800s_721_xg28);
       return true;
