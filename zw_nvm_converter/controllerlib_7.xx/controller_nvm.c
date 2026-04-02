@@ -538,6 +538,25 @@ static bool app_nvm_is_pre_v7_19(uint8_t major, uint8_t minor, uint8_t patch)
   return false;
 }
 
+/** True for Z-Wave protocol stack 7.19+ and all 8.x / newer (major > 7). */
+static bool protocol_stack_is_7_19_or_newer(uint8_t prot_major, uint8_t prot_minor)
+{
+  return (prot_major > 7) || (prot_major == 7 && prot_minor >= 19);
+}
+
+/** On 800 series, ZAF app-related keys (app version, APPLICATIONCONFIGURATION, …) are stored in the
+ *  protocol NVM3 instance for stacks 7.19+ / 8+. Same rule as create_nvm3_version_files(). */
+static bool nvm3_app_files_on_800s_protocol_instance(nvmLayout_t nvm_layout,
+                                                       uint8_t prot_major,
+                                                       uint8_t prot_minor)
+{
+  if (nvm_layout == NVM3_700s)
+  {
+    return false;
+  }
+  return protocol_stack_is_7_19_or_newer(prot_major, prot_minor);
+}
+
 /*****************************************************************************/
 /* Used to parse the key 0x5A000 to determine whether the hardware is xg23 or xg28 */
 bool check_controller_nvm(const uint8_t *nvm_image, size_t nvm_image_size, nvmLayout_t nvm_layout)
@@ -800,7 +819,7 @@ static void backup_info(nvmLayout_t nvm_layout)
   target_protocol_version.major = (le32toh(prot_version_le) >> 16) & 0xff;
   target_protocol_version.minor = (le32toh(prot_version_le) >> 8) & 0xff;
   target_protocol_version.patch = (le32toh(prot_version_le) >> 0) & 0xff;
-  if (NVM3_800s_FROM_719 == nvm_layout || (NVM3_800s_PRIOR_719 == nvm_layout && target_protocol_version.minor >= 19))
+  if (nvm3_app_files_on_800s_protocol_instance(nvm_layout, target_protocol_version.major, target_protocol_version.minor))
   {
     if (EFR32XG28 == hardware_info)
     {
@@ -840,7 +859,7 @@ static json_object *app_config_to_json(nvmLayout_t nvm_layout)
   if (app_nvm_is_v8(target_app_version.major, target_app_version.minor, target_app_version.patch))
   {
     SApplicationConfiguration_7_21_x ac = {};
-    if (nvm_layout == NVM3_800s_FROM_719 || (nvm_layout == NVM3_800s_PRIOR_719 && target_app_version.minor >= 19))
+    if (nvm3_app_files_on_800s_protocol_instance(nvm_layout, target_protocol_version.major, target_protocol_version.minor))
     {
       ec = READ_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
     }
@@ -888,7 +907,7 @@ static json_object *app_config_to_json(nvmLayout_t nvm_layout)
   else if (app_nvm_is_pre_v7_21(target_app_version.major, target_app_version.minor, target_app_version.patch))
   {
     SApplicationConfiguration_7_18_1 ac = {};
-    if (nvm_layout == NVM3_800s_FROM_719 || (nvm_layout == NVM3_800s_PRIOR_719 && target_app_version.minor >= 19))
+    if (nvm3_app_files_on_800s_protocol_instance(nvm_layout, target_protocol_version.major, target_protocol_version.minor))
     {
       ec = READ_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
     }
@@ -909,7 +928,7 @@ static json_object *app_config_to_json(nvmLayout_t nvm_layout)
   else
   {
     SApplicationConfiguration_7_21_x ac = {};
-    if (nvm_layout == NVM3_800s_FROM_719 || (nvm_layout == NVM3_800s_PRIOR_719 && target_protocol_version.minor >= 19))
+    if (nvm3_app_files_on_800s_protocol_instance(nvm_layout, target_protocol_version.major, target_protocol_version.minor))
     {
       ec = READ_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
     }
@@ -1636,7 +1655,7 @@ json_object *controller_info_nvm_get_json(nvmLayout_t nvm_layout)
   json_add_int(jo, "format", (int32_t)target_protocol_version.format);
   json_add_int(jo, "applicationFileFormat", (int32_t)target_app_version.format);
 
-  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 19) || (target_protocol_version.major == 8))
+  if (protocol_stack_is_7_19_or_newer(target_protocol_version.major, target_protocol_version.minor))
   {
     json_object_object_add(jo, "controller", nvm_from_719_controller_info_to_json(nvm_layout));
   }
@@ -2745,7 +2764,7 @@ bool controller_parse_json(json_object *jo, nvmLayout_t nvm_layout)
     return false;
   }
 
-  if ((target_protocol_version.major == 7 && target_protocol_version.minor >= 19) || (target_protocol_version.major == 8))
+  if (protocol_stack_is_7_19_or_newer(target_protocol_version.major, target_protocol_version.minor))
   {
     if (false == parse_controller_nvm719_json(jo_ref, nvm_layout))
     {
