@@ -2185,6 +2185,10 @@ static bool parse_app_config_json(json_object *jo_app_config, nvmLayout_t nvm_la
   }
   else if (app_nvm_is_v8(target_protocol_version.major, target_protocol_version.minor, target_protocol_version.patch))
   {
+    /**
+     * This function is only invoked when building the target NVM image.
+     * Protocol 8 exists only on 800 series; ZAF app files use the protocol NVM instance.
+     */
     SApplicationConfiguration_7_21_x ac = {};
     ac.rfRegion = json_get_int(jo_app_config, "rfRegion", 0, JSON_OPTIONAL);
     ac.iTxPower = json_get_int(jo_app_config, "txPower", 0, JSON_OPTIONAL);
@@ -2192,17 +2196,7 @@ static bool parse_app_config_json(json_object *jo_app_config, nvmLayout_t nvm_la
     ac.enablePTI = json_get_bool(jo_app_config, "enablePTI", 0, JSON_OPTIONAL);
     ac.maxTxPower = json_get_int(jo_app_config, "maxTxPower", 140, JSON_OPTIONAL);
     ac.nodeIdBaseType = json_get_int(jo_app_config, "nodeIdType", 0, JSON_OPTIONAL);
-    if (NVM3_700s == nvm_layout)
-    {
-      WRITE_APP_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
-      // WRITE_PROT_NVM(FILE_ID_PROPRIETARY_1, dcdc);
-      const char * app_name = json_get_string(jo_app_config, "applicationName", "serial_api_controller", JSON_OPTIONAL);
-      WRITE_PROT_NVM(ZAF_FILE_ID_APP_NAME_800s_XG23, app_name);
-    }
-    else
-    {
-      WRITE_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
-    }
+    WRITE_PROT_NVM(FILE_ID_APPLICATIONCONFIGURATION, ac);
   }
   else
   {
